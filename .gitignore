@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Secrets and credentials (NEVER commit these)
+*secret*
+*credential*
+*api_key*
+*private_key*
+*.pem
+*.key
+*.cert
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.next/
+out/
+coverage/
+.coverage
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# Package manager lock files (optional - include if you want deterministic builds)
+# Uncomment these if you want to track lock files
+# package-lock.json
+# yarn.lock
+# poetry.lock
