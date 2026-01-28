@@ -23,6 +23,15 @@ export class ProductService {
    * @throws ValidationError if SKU already exists or data is invalid
    */
   async createProduct(data: CreateProductDTO): Promise<Product> {
+    // Validate required fields (human-designed validation)
+    if (!data.name || data.name.trim().length === 0) {
+      throw new ValidationError('Product name is required');
+    }
+
+    if (!data.sku || data.sku.trim().length === 0) {
+      throw new ValidationError('Product SKU is required');
+    }
+
     // Validate SKU uniqueness (human-designed business rule)
     const existingProduct = await this.productRepository.findBySKU(data.sku);
     if (existingProduct) {

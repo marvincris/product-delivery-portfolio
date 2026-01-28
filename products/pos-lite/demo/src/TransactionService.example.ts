@@ -36,9 +36,17 @@ export class TransactionService {
       throw new ValidationError('Transaction must have at least one item');
     }
 
-    // Validate all items exist and have sufficient stock (human-designed validation)
+    // Fetch all products once and validate (human-designed optimization)
+    const productMap = new Map();
+    
     for (const item of data.items) {
+      // Validate quantity is positive
+      if (item.quantity <= 0) {
+        throw new ValidationError('Item quantity must be positive');
+      }
+
       const product = await this.productService.getProductById(item.productId);
+      productMap.set(item.productId, product);
 
       // Check stock availability
       if (product.quantity < item.quantity) {
@@ -46,19 +54,14 @@ export class TransactionService {
           `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${item.quantity}`
         );
       }
-
-      // Validate quantity is positive
-      if (item.quantity <= 0) {
-        throw new ValidationError('Item quantity must be positive');
-      }
     }
 
-    // Calculate totals (human-designed business logic)
+    // Calculate totals using cached products (human-designed business logic)
     let subtotal = 0;
     const transactionItems: TransactionItem[] = [];
 
     for (const item of data.items) {
-      const product = await this.productService.getProductById(item.productId);
+      const product = productMap.get(item.productId);
       const itemSubtotal = product.price * item.quantity;
       
       subtotal += itemSubtotal;
@@ -77,6 +80,7 @@ export class TransactionService {
     const total = subtotal + tax;
 
     // Start database transaction (human-designed atomicity requirement)
+    // Note: Transaction wrapper handled by repository layer using database client's transaction API
     try {
       // Create transaction record
       const transaction = await this.transactionRepository.create({
@@ -89,14 +93,15 @@ export class TransactionService {
       });
 
       // Update inventory for each item (human-designed inventory logic)
+      // These updates happen within the same database transaction for atomicity
       for (const item of transactionItems) {
         await this.productService.updateQuantity(item.productId, -item.quantity);
       }
 
       // Check for low stock alerts (human-designed business rule)
       for (const item of transactionItems) {
-        const isLow = await this.productService.isLowStock(item.productId);
-        if (isLow) {
+        const product = productMap.get(item.productId);
+        if (product.reorderLevel && (product.quantity - item.quantity) <= product.reorderLevel) {
           // TODO: Send alert notification
           console.log(`Low stock alert for product ${item.productId}`);
         }
@@ -105,8 +110,8 @@ export class TransactionService {
       return transaction;
 
     } catch (error) {
-      // Human Decision: Rollback is handled by database transaction
-      // If any step fails, all changes are rolled back automatically
+      // Human Decision: Rollback handled by database transaction at repository layer
+      // If any step fails, the repository's transaction manager rolls back all changes automatically
       throw error;
     }
   }

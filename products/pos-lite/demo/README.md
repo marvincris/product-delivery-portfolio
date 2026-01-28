@@ -174,7 +174,8 @@ This is a **demonstration**, not production-ready software:
 
 ## 📊 Metrics
 
-**Development Time**: ~3 weeks (part-time)
+**Development Time**: ~3 weeks (part-time) for this demo implementation
+  *(Note: Full production system estimated at 6 weeks as documented in architecture.md)*
 **Code Lines**: ~4,000 (excluding tests and dependencies)
 **Test Coverage**: ~75%
 **AI Contribution**: ~40% (boilerplate, tests, documentation)
@@ -200,7 +201,7 @@ This is a **demonstration**, not production-ready software:
 
 If you want to understand the patterns used:
 
-- **Service Layer Pattern**: Martin Fowler's P of EAA
+- **Service Layer Pattern**: Martin Fowler's Patterns of Enterprise Application Architecture (PoEAA)
 - **Repository Pattern**: Domain-Driven Design by Eric Evans
 - **API Design**: RESTful Web APIs by Leonard Richardson
 - **React Patterns**: React Hooks documentation
